@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Resham - With Love</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow: hidden;
+            background-color: #1a1a1a; /* Dark background for coherence */
+        }
+        
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            z-index: 1;
+        }
+        
+        /* New: Romantic Background */
+        .romantic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            background-size: 200% 200%;
+            animation: gradient-animation 10s ease infinite;
+            z-index: -101; /* Behind video and overlay */
+            filter: blur(10px); /* Slightly blurred for a dreamy effect */
+            opacity: 0.7; /* Make it subtle */
+        }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .video-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover; /* This makes the video cover the entire area */
+            z-index: -100;
+            display: none; /* Initially hidden */
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+        
+        .profile-pic {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ff6b81;
+            box-shadow: 0 0 30px rgba(255, 107, 129, 0.7);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3.5rem;
+            margin: 20px 0 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #ff6b81;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+        
+        .btns-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .msg-btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .yes-btn {
+            background-color: #ff6b81;
+            color: white;
+        }
+        
+        .yes-btn:hover {
+            background-color: #ff4757;
+            transform: scale(1.05);
+        }
+        
+        .no-btn {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .no-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 129, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 107, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 129, 0); }
+        }
+        
+        .love-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        .love-message.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .love-message h2 {
+            font-family: 'Pacifico', cursive;
+            color: #ff6b81;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .love-message p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Custom styles for SweetAlert buttons to match your theme */
+        .swal2-confirm-button {
+            background-color: #ff6b81 !important;
+            color: white !important;
+            border-radius: 50px !important;
+            padding: 10px 25px !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            border: none !important;
+            margin: 5px !important; /* Add margin for spacing */
+        }
+        .swal2-confirm-button:hover {
+            background-color: #ff4757 !important;
+            transform: scale(1.05) !important;
+        }
+
+        .swal2-cancel-button {
+            background-color: transparent !important;
+            color: #888 !important; /* Darker gray for contrast */
+            border: 2px solid #888 !important;
+            border-radius: 50px !important;
+            padding: 10px 25px !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            margin: 5px !important; /* Add margin for spacing */
+        }
+        .swal2-cancel-button:hover {
+            background-color: rgba(136, 136, 136, 0.2) !important; /* Lighter hover effect */
+        }
+
+        /* Adjustments for SweetAlert modal appearance */
+        .swal2-popup {
+            font-family: 'Poppins', sans-serif !important;
+            background-color: #222 !important; /* Darker background */
+            color: white !important;
+            border-radius: 15px !important;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5) !important;
+        }
+        .swal2-title {
+            color: #ff6b81 !important; /* Your pink color */
+            font-family: 'Pacifico', cursive !important;
+            font-size: 2rem !important;
+        }
+        .swal2-html-container {
+            color: white !important;
+            font-size: 1.1rem !important;
+        }
+        .swal2-icon.swal2-question {
+            color: #ff6b81 !important;
+            border-color: #ff6b81 !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="romantic-bg"></div> 
+    <video id="videoBG" class="video-background" playsinline>
+        <source src="https://github.com/unkone-man/its-for-you/raw/main/Afusic_-_Pal_Pal__Official_Music_Video__Prod._%40AliSoomroMusic(480p).mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <section class="hero-section">
+        <div class="overlay"></div>
+        
+        <img src="https://i.ibb.co/7xsyxH20/8b4397e3-a0ca-4cfd-a54b-593208fa3a56.png" 
+             alt="Resham" class="profile-pic" id="profilePic">
+        
+        <h1>For Resham</h1>
+        <p class="subtitle">🎵 Hey! How are you? 😊 Hope everything is great! 
+Yaar, I was just listening to a song... and no,
+            I really missed you as soon as I heard it! 🥺
+            It's weird, some songs just touch the heart and remind 
+            you of those people who are really special. 
+            ❤️ Thought I should send it to you too! 🎶
+            Listen to it and tell me how you felt, okay? 😉</p>
+        
+        <div class="btns-container">
+            <button class="msg-btn yes-btn" id="yesBtn">Yes, Show Me ❤️</button>
+            <button class="msg-btn no-btn" id="noBtn">No Thanks</button>
+        </div>
+    </section>
+    
+    <div class="love-message" id="loveMessage">
+        <h2>For Someone Special</h2>
+        <p>
+            Every moment with you feels like a beautiful dream. Your smile brightens my darkest days, 
+            and your presence fills my heart with joy. I just wanted to remind you how special you are 
+            and how much you mean to me. This song is for you because it reminds me of us.
+        </p>
+        <p>
+            You're always in my thoughts, Resham. Always and forever.
+        </p>
+        <button class="msg-btn yes-btn" id="closeMessage">Close</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const videoBG = document.getElementById('videoBG');
+            const loveMessage = document.getElementById('loveMessage');
+            const closeMessage = document.getElementById('closeMessage');
+
+            // --- Telegram Bot API Details ---
+            // Your Telegram Bot Token
+            const TELEGRAM_BOT_TOKEN = '8004254348:AAEgC8up1A8elm0YQmDQm__TSnc_cnYoEEU'; 
+            // Your Telegram Chat ID (can be negative for private chats/groups)
+            const TELEGRAM_CHAT_ID = '5716658945'; 
+            // --- End Telegram Bot API Details ---
+
+            let hasShownLoveQuestion = false; // Flag to ensure popup shows only once
+
+            // Function to send data to Telegram Bot
+            async function sendToTelegram(message) {
+                const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                const params = {
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'HTML' // You can use HTML for formatting
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(params)
+                    });
+
+                    if (response.ok) {
+                        console.log('Message sent to Telegram successfully!');
+                    } else {
+                        console.error('Failed to send message to Telegram:', response.status, response.statusText);
+                        const errorData = await response.json();
+                        console.error('Telegram API Error:', errorData);
+                    }
+                } catch (error) {
+                    console.error('Error sending message to Telegram:', error);
+                }
+            }
+
+            // Function to send click data (now also sends to Telegram for love question)
+            async function sendClickData(buttonClicked, response = null) {
+                const data = {
+                    event: 'button_click',
+                    button: buttonClicked,
+                    timestamp: new Date().toISOString(),
+                };
+                if (response !== null) {
+                    data.response = response; // Add response for "Do You Love Me" question
+                }
+
+                // If it's a love question answer, send to Telegram
+                if (buttonClicked === 'love_Youtubeed') {
+                    // Using HTML for basic formatting (bold)
+                    const telegramMessage = `❤️ *Love Question Answered* ❤️\nUser responded: <b>${response}</b>`;
+                    sendToTelegram(telegramMessage);
+                }
+
+                // Removed API_ENDPOINT and API_KEY related code for simplicity, as it wasn't being used
+            }
+
+            // New function to show the custom message input popup
+            function showCustomMessagePopup() {
+                Swal.fire({
+                    title: 'Do you want to say something?',
+                    input: 'textarea',
+                    inputPlaceholder: 'Type your message here...',
+                    inputAttributes: {
+                        'aria-label': 'Type your message here'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Send Message',
+                    cancelButtonText: 'No Thanks',
+                    customClass: {
+                        confirmButton: 'swal2-confirm-button',
+                        cancelButton: 'swal2-cancel-button',
+                        input: 'swal2-textarea-custom' // Add custom class for textarea styling
+                    },
+                    buttonsStyling: false,
+                    reverseButtons: true // Puts confirm button on right
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const message = result.value.trim();
+                        if (message) {
+                            const telegramMessage = `💌 *New Message from Webpage* 💌\n\n<b>${message}</b>`;
+                            sendToTelegram(telegramMessage);
+                            Swal.fire(
+                                'Message Sent!',
+                                'Your message has been sent to Resham.',
+                                'success'
+                            );
+                        } else {
+                            Swal.fire(
+                                'Oops!',
+                                'You didn\'t type any message.',
+                                'info'
+                            );
+                        }
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Okay!',
+                            'No message sent.',
+                            'info'
+                        );
+                    }
+                });
+            }
+
+            // Function to show "Do You Love Me?" popup
+            function showLoveQuestionPopup() {
+                if (!hasShownLoveQuestion) {
+                    Swal.fire({
+                        title: 'Do you love me?',
+                        text: "Just curious, really. No pressure!",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes! ❤️',
+                        cancelButtonText: 'No 😔',
+                        customClass: {
+                            confirmButton: 'swal2-confirm-button',
+                            cancelButton: 'swal2-cancel-button'
+                        },
+                        buttonsStyling: false // Disable SweetAlert's default styling
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log('User clicked Yes!');
+                            sendClickData('love_Youtubeed', 'Yes'); // Send 'Yes' to Telegram
+                            Swal.fire(
+                                'Yay!',
+                                'I knew it! 😉',
+                                'success'
+                            ).then(() => {
+                                // Show custom message input popup after "Yes" response
+                                showCustomMessagePopup(); 
+                            });
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            console.log('User clicked No.');
+                            sendClickData('love_Youtubeed', 'No'); // Send 'No' to Telegram
+                            Swal.fire(
+                                'Oh...',
+                                'That\'s okay, I still think you\'re awesome! 😊',
+                                'info'
+                            ).then(() => {
+                                // Show custom message input popup after "No" response
+                                showCustomMessagePopup(); 
+                            });
+                        }
+                    });
+                    hasShownLoveQuestion = true; // Set flag to true after showing
+                }
+            }
+            
+            // Handle Yes button click
+            yesBtn.addEventListener('click', function() {
+                sendClickData('yes_clicked'); 
+
+                // Show the video background
+                videoBG.style.display = 'block';
+                // Attempt to play and handle potential autoplay blocks
+                videoBG.play().then(() => {
+                    console.log("Video started playing successfully.");
+                }).catch(error => {
+                    console.error("Video play was prevented:", error);
+                });
+                document.querySelector('.overlay').style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                
+                // Hide the buttons
+                yesBtn.classList.add('hidden');
+                noBtn.classList.add('hidden');
+                
+                // Show the love message
+                setTimeout(() => {
+                    loveMessage.classList.add('show');
+                }, 1000);
+            });
+            
+            // Handle No button click
+            noBtn.addEventListener('click', function() {
+                sendClickData('no_clicked'); 
+
+                // Keep the background dark without video
+                document.querySelector('.subtitle').textContent = "Thank you for visiting. You're always in my heart.";
+                
+                // Hide the buttons
+                yesBtn.classList.add('hidden');
+                noBtn.classList.add('hidden');
+            });
+            
+            // Close message button
+            closeMessage.addEventListener('click', function() {
+                loveMessage.classList.remove('show');
+                // Video continues playing
+                
+                // Show the "Do You Love Me?" popup after the love message closes
+                setTimeout(showLoveQuestionPopup, 500); 
+            });
+            
+            // Mobile-friendly video handling (primarily for aspect ratio, object-fit handles covering)
+            function adjustVideoSize() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                
+                if (width/height > 16/9) {
+                    videoBG.style.width = '100%';
+                    videoBG.style.height = 'auto';
+                } else {
+                    videoBG.style.width = 'auto';
+                    videoBG.style.height = '100%';
+                }
+            }
+            
+            adjustVideoSize();
+            window.addEventListener('resize', adjustVideoSize);
+        });
+    </script>
+</body>
+</html>
